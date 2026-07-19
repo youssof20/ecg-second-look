@@ -13,7 +13,8 @@ Endpoints:
 - `GET /api/v1/health`
 - `POST /api/v1/quality` (multipart file)
 - `POST /api/v1/detect-page` (multipart file; refused when quality hard-fails)
-- `POST /api/v1/rectify` (multipart file + `corners_json` form field)
+- `POST /api/v1/propose-layout` (multipart file; 3×4 geometric proposal)
+- `POST /api/v1/extract-trace` (multipart file + `region_json` form field)
 - `GET /samples/...` (synthetic fixtures)
 
 Uploads are not written to disk.

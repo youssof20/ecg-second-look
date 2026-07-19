@@ -79,3 +79,56 @@ class RectifyResponse(BaseModel):
     output_height: int
     used_corners: CornerSet
     note: str
+
+
+LeadId = str
+
+
+class Rect(BaseModel):
+    x: float = Field(ge=0)
+    y: float = Field(ge=0)
+    width: float = Field(gt=0)
+    height: float = Field(gt=0)
+
+
+class LeadRegion(BaseModel):
+    lead_id: LeadId
+    rect: Rect
+    row: int = Field(ge=0, le=2)
+    col: int = Field(ge=0, le=3)
+
+
+class LayoutProposal(BaseModel):
+    layout_id: str
+    layout_version: str
+    image_width: int
+    image_height: int
+    regions: list[LeadRegion]
+    assumptions: list[str]
+
+
+class TraceStatus(str, Enum):
+    extracted = "extracted"
+    failed = "failed"
+
+
+class TraceSample(BaseModel):
+    """Normalized sample: x in [0,1] across the ROI, y in image-down pixels within the ROI."""
+
+    x: float
+    y: float
+
+
+class TraceExtractionResult(BaseModel):
+    status: TraceStatus
+    lead_id: LeadId
+    region: LeadRegion
+    samples: list[TraceSample]
+    ink_fraction: float
+    gap_count: int
+    quality_status: CheckStatus
+    failure_reason: str | None = None
+    method: str
+    source_crop_base64: str | None = None
+    debug_overlay_base64: str | None = None
+    note: str
