@@ -28,13 +28,13 @@ export function AboutPage() {
         </h2>
         <ul>
           <li>
-            <strong>Training</strong> — offline vector projection lesson with
+            <strong>Training</strong>: offline vector projection lesson with
             stated model assumptions.
           </li>
           <li>
-            <strong>Second Look</strong> — planned local image pipeline with
-            quality rejection, evidence panels, and explicit{' '}
-            <code>not_assessable</code> states.
+            <strong>Second Look</strong>: local image quality checks and page
+            correction with inspectable original/corrected comparison. Lead
+            extraction and pattern rules are not implemented yet.
           </li>
         </ul>
       </section>

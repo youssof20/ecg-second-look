@@ -1,0 +1,49 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+}
+
+.note {
+  margin: 0;
+  color: var(--ink-muted);
+  line-height: 1.4;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.figure {
+  margin: 0;
+  border: 1px solid var(--line);
+  background: var(--surface-raised);
+  padding: 0.5rem;
+}
+
+.figure figcaption {
+  margin-bottom: 0.4rem;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: #111;
+}
+
+@media (max-width: 700px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
