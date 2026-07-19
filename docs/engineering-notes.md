@@ -15,3 +15,9 @@
 - When no page quad is found, the API returns full-frame corners with status `fallback_full_frame` instead of inventing a confident detection.
 - Rectify returns PNG base64 and never writes the upload or result to disk.
 - OpenCV pin is `opencv-python-headless==5.0.0.93` because older 4.12 wheels conflict with NumPy builds available for Python 3.14 on this machine.
+
+## Slice 3 — layout and one-lead trace
+
+- Only one layout is supported: geometric 3×4 (`I/aVR/V1/V4` …). Boxes are proposals, not OCR of lead labels.
+- Trace extraction uses HSV grid suppression only when reddish grid coverage exceeds 2%; otherwise faint grayscale traces were being erased in early experiments.
+- Gap repair is capped (`MAX_GAP_RUN = 6`). Longer discontinuities stay as failures instead of inventing a continuous waveform.
