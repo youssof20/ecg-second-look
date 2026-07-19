@@ -30,13 +30,12 @@ export function HomePage() {
         </h2>
         <ul className={styles.statusList}>
           <li>
-            <strong>Working:</strong> offline training lesson; Second Look quality,
-            corners, lead regions, multi-lead extraction, features, and prototype
-            pattern flags.
+            <strong>Working:</strong> Training offline; Second Look local pipeline
+            through pattern flags; PWA shell; accessibility basics.
           </li>
           <li>
-            <strong>Not built yet:</strong> accessibility polish pass and demo
-            recording package.
+            <strong>Still unvalidated:</strong> any clinical performance claim.
+            Synthetic benchmarks are not clinical validity.
           </li>
         </ul>
       </section>

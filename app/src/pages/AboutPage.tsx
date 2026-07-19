@@ -12,8 +12,8 @@ export function AboutPage() {
         <p>
           ECG Second Look is an educational and research prototype. Training mode
           teaches how a simplified cardiac vector projects onto standard leads.
-          Second Look (not yet available) will digitize photographs of printed
-          ECGs and show inspectable measurements with prototype pattern flags.
+          Second Look digitizes photographs of printed ECGs locally and shows
+          inspectable measurements with prototype pattern flags.
         </p>
         <p>
           It is not a medical device, not cleared for clinical use, and not a
@@ -32,11 +32,22 @@ export function AboutPage() {
             stated model assumptions.
           </li>
           <li>
-            <strong>Second Look</strong>: local image quality checks and page
-            correction with inspectable original/corrected comparison. Lead
-            extraction and pattern rules are not implemented yet.
+            <strong>Second Look</strong>: local quality checks, page correction,
+            lead regions, trace extraction, limited features, and prototype
+            pattern flags with explicit unable-to-assess states.
           </li>
         </ul>
+      </section>
+
+      <section aria-labelledby="offline">
+        <h2 id="offline" className={styles.h2}>
+          Offline
+        </h2>
+        <p>
+          Training can run offline after the app is installed or cached. Second
+          Look needs the local Python analysis service on the same machine. See{' '}
+          <code>docs/offline.md</code>.
+        </p>
       </section>
 
       <section aria-labelledby="privacy">
@@ -45,8 +56,8 @@ export function AboutPage() {
         </h2>
         <p>
           Do not upload images that contain patient names, dates of birth, medical
-          record numbers, or hospital identifiers. Future demos will process files
-          locally where possible and will not store uploads by default.
+          record numbers, or hospital identifiers. Uploads are processed in memory
+          and are not stored by default.
         </p>
       </section>
 
@@ -55,8 +66,8 @@ export function AboutPage() {
           License
         </h2>
         <p>
-          Software is MIT-licensed unless a file states otherwise. Sample data, if
-          added later, carries its own provenance notes.
+          Software is MIT-licensed unless a file states otherwise. Sample data
+          carries its own provenance notes under <code>samples/</code>.
         </p>
       </section>
     </article>

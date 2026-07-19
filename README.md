@@ -2,25 +2,27 @@
 
 Offline-first ECG interpretation trainer and transparent second-reader prototype for non-cardiologist clinicians in low-resource settings.
 
-Training mode runs in the browser after install. Second Look uses a local Python service on the same machine. That is not on-device mobile offline inference.
+Training works offline after install. Second Look uses a local Python service on the same machine.
 
 **Not a medical device. Not for patient-care decisions.**
 
 ## What currently works
 
-- Offline frontal-plane vector training lesson
-- Local Second Look pipeline: quality checks, page corners, 3x4 lead regions, multi-lead trace extraction, limited features, prototype pattern flags
-- Synthetic fixtures and a small benchmark script
+- Offline Training mode (vector lesson)
+- Second Look: quality checks, page corners, 3x4 leads, multi-lead traces, features, prototype pattern flags
+- PWA packaging for the app shell
+- Synthetic fixtures, tests, and benchmark script
+- Accessibility basics: skip link, focus outlines, offline banner, reduced-motion support
 
 ## What does not work
 
 - Clinical validation
 - Fully offline Second Look on a phone without the local API
-- Reliable diagnosis of STEMI, hyperkalemia, VT, AF, or any other condition
+- Reliable detection of STEMI, hyperkalemia, VT, AF, or other conditions
 
 ## Local setup
 
-On Windows PowerShell, use `npm.cmd` (avoids the script-permission error):
+On Windows PowerShell, use `npm.cmd`:
 
 ```powershell
 cd app
@@ -36,7 +38,15 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m uvicorn ecg_api.main:app --app-dir api --reload --port 8000
 ```
 
-Tests:
+## Docs
+
+- `docs/offline.md`
+- `docs/accessibility.md`
+- `docs/demo-walkthrough.md`
+- `docs/validation-roadmap.md`
+- `docs/engineering-notes.md`
+
+## Testing
 
 ```powershell
 cd app
@@ -50,33 +60,13 @@ npm.cmd run build
 .\.venv\Scripts\python.exe scripts\benchmark_pipeline.py
 ```
 
-## Architecture
+## Sample workflow
 
-| Path | Role |
-|------|------|
-| `app/` | React PWA |
-| `api/` | FastAPI + OpenCV pipeline |
-| `samples/synthetic/` | Generated fixtures only |
-| `docs/` | Engineering notes and validation roadmap |
+See `docs/demo-walkthrough.md`.
 
-Uploads stay in memory and are not stored by default.
+## Safety
 
-## Sample workflow (Second Look)
-
-1. Start the API, then the app.
-2. Open Second Look and load **Clean page (layout)** or **Skewed photo**.
-3. Complete quality / corners as needed.
-4. Propose 3x4 layout, extract all leads, review feature evidence and pattern flags.
-
-## Safety and intended use
-
-Educational and research prototype only. Pattern outputs are prototype flags, not diagnoses. Do not upload identifiable clinical headers.
-
-## Roadmap
-
-Next: accessibility polish, offline packaging review, and a realistic demo recording (Slice 6).
-
-See `docs/validation-roadmap.md`.
+Educational and research prototype only. Pattern flags are not diagnoses. Do not upload identifiable clinical material.
 
 ## License
 
