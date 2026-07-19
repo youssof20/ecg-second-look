@@ -45,7 +45,8 @@ export function FrontalPlaneDiagram({ vector, onAngleChange }: FrontalPlaneDiagr
         className={styles.svg}
         viewBox={`0 0 ${SIZE} ${SIZE}`}
         role="img"
-        aria-label={`Frontal-plane cardiac vector at ${vector.angleDeg} degrees, magnitude ${vector.magnitude.toFixed(2)}`}
+        tabIndex={0}
+        aria-label={`Frontal-plane cardiac vector at ${vector.angleDeg} degrees, magnitude ${vector.magnitude.toFixed(2)}. Use the angle and magnitude sliders for keyboard control.`}
         onPointerDown={handlePointer}
         onPointerMove={handlePointer}
       >

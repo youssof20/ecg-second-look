@@ -1,0 +1,9 @@
+.banner {
+  margin: 0;
+  padding: 0.7rem clamp(0.85rem, 3vw, 1.5rem);
+  background: color-mix(in srgb, #b45309 14%, var(--surface));
+  border-bottom: 1px solid color-mix(in srgb, #b45309 35%, var(--line));
+  color: var(--ink);
+  font-weight: 600;
+  line-height: 1.4;
+}

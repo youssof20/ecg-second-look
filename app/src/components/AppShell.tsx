@@ -1,4 +1,5 @@
 import { NavLink, Outlet } from 'react-router-dom'
+import { OfflineBanner } from './OfflineBanner'
 import styles from './AppShell.module.css'
 
 const NAV = [
@@ -14,6 +15,7 @@ export function AppShell() {
       <a className={styles.skip} href="#main">
         Skip to content
       </a>
+      <OfflineBanner />
       <header className={styles.header}>
         <div className={styles.brandBlock}>
           <p className={styles.brand}>ECG Second Look</p>
@@ -37,7 +39,7 @@ export function AppShell() {
         </nav>
       </header>
 
-      <main id="main" className={styles.main}>
+      <main id="main" className={styles.main} tabIndex={-1}>
         <Outlet />
       </main>
 
