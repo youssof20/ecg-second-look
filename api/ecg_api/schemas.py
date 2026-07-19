@@ -160,9 +160,31 @@ class FeatureSet(BaseModel):
     summary: str
 
 
+class RuleStatus(str, Enum):
+    triggered = "triggered"
+    not_triggered = "not_triggered"
+    not_assessable = "not_assessable"
+
+
+class PatternRuleResult(BaseModel):
+    id: str
+    display_name: str
+    status: RuleStatus
+    purpose: str
+    reason: str
+    affected_leads: list[LeadId]
+    evidence_features: list[str]
+    threshold_summary: str
+    limitations: list[str]
+    source_note: str
+    version: str
+    explanation: str
+
+
 class MultiLeadAnalysis(BaseModel):
     traces: list[TraceExtractionResult]
     features: FeatureSet
+    pattern_flags: list[PatternRuleResult] = []
     extracted_count: int
     failed_count: int
     note: str

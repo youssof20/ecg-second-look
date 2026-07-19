@@ -15,6 +15,7 @@ from ecg_api.features import default_calibration, measure_features_from_traces
 from ecg_api.layout import propose_lead_regions
 from ecg_api.perspective import detect_page_corners, rectify_page
 from ecg_api.quality import assess_image_quality
+from ecg_api.rules import evaluate_pattern_rules
 from ecg_api.schemas import (
     Calibration,
     LeadRegion,
@@ -186,16 +187,18 @@ async def analyze_leads(
         extract_lead_trace(image, region, include_debug=include_debug) for region in regions
     ]
     features = measure_features_from_traces(traces, calibration)
+    pattern_flags = evaluate_pattern_rules(features)
     extracted = sum(1 for t in traces if t.status == TraceStatus.extracted)
     failed = len(traces) - extracted
     return MultiLeadAnalysis(
         traces=traces,
         features=features,
+        pattern_flags=pattern_flags,
         extracted_count=extracted,
         failed_count=failed,
         note=(
-            "Multi-lead extraction and feature values are prototype measurements. "
-            "Inspect failures and calibration assumptions before any clinical use."
+            "Multi-lead extraction, features, and pattern flags are prototype outputs. "
+            "Flags are not diagnoses. Inspect failures and calibration before any clinical use."
         ),
     )
 
