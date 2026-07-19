@@ -11,6 +11,7 @@
   --positive: #1b5e3b;
   --negative: #8a2f2f;
   --trace: #b42318;
+  --focus: #0f6b63;
   --font-display: "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
   --font-ui: "Segoe UI", "Helvetica Neue", Helvetica, sans-serif;
   font-family: var(--font-ui);
@@ -53,8 +54,26 @@ svg {
 
 button,
 input,
+select,
 a {
   -webkit-tap-highlight-color: transparent;
+}
+
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -65,5 +84,15 @@ a {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --ink: #000;
+    --ink-muted: #222;
+    --line: #666;
+    --line-strong: #333;
+    --accent: #064e48;
   }
 }
