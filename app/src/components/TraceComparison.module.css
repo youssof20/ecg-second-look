@@ -1,0 +1,99 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+}
+
+.ok,
+.fail,
+.meta,
+.note,
+.empty {
+  margin: 0;
+  line-height: 1.4;
+}
+
+.ok {
+  color: var(--positive);
+}
+
+.fail {
+  padding: 0.65rem 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--negative) 40%, var(--line));
+  background: color-mix(in srgb, var(--negative) 10%, var(--surface-raised));
+  color: var(--ink);
+}
+
+.meta,
+.note {
+  color: var(--ink-muted);
+}
+
+.debugToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 2.5rem;
+  font-weight: 600;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.figure,
+.figureWide {
+  margin: 0;
+  border: 1px solid var(--line);
+  background: var(--surface-raised);
+  padding: 0.5rem;
+}
+
+.figureWide {
+  grid-column: 1 / -1;
+}
+
+.figure figcaption,
+.figureWide figcaption {
+  margin-bottom: 0.4rem;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.figure img,
+.figureWide img {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: #111;
+}
+
+.plot {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.plotBg {
+  fill: #f7faf8;
+}
+
+.plotLine {
+  stroke: var(--trace);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+@media (max-width: 700px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}

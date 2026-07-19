@@ -49,7 +49,53 @@ export interface RectifyResponse {
   note: string
 }
 
+export interface Rect {
+  x: number
+  y: number
+  width: number
+  height: number
+}
+
+export interface LeadRegion {
+  lead_id: string
+  rect: Rect
+  row: number
+  col: number
+}
+
+export interface LayoutProposal {
+  layout_id: string
+  layout_version: string
+  image_width: number
+  image_height: number
+  regions: LeadRegion[]
+  assumptions: string[]
+}
+
+export type TraceStatus = 'extracted' | 'failed'
+
+export interface TraceSample {
+  x: number
+  y: number
+}
+
+export interface TraceExtractionResult {
+  status: TraceStatus
+  lead_id: string
+  region: LeadRegion
+  samples: TraceSample[]
+  ink_fraction: number
+  gap_count: number
+  quality_status: CheckStatus
+  failure_reason: string | null
+  method: string
+  source_crop_base64: string | null
+  debug_overlay_base64: string | null
+  note: string
+}
+
 export const SAMPLE_FILES = [
+  { id: 'clean_page', label: 'Clean page (layout)', path: '/samples/synthetic/clean_12lead.png' },
   { id: 'photo_skewed', label: 'Skewed photo', path: '/samples/synthetic/photo_skewed.png' },
   { id: 'photo_flat', label: 'Flat photo', path: '/samples/synthetic/photo_flat.png' },
   { id: 'photo_blurry', label: 'Blurry (should refuse)', path: '/samples/synthetic/photo_blurry.png' },

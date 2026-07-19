@@ -3,6 +3,9 @@ import type {
   QualityReport,
   RectifyResponse,
   CornerSet,
+  LayoutProposal,
+  LeadRegion,
+  TraceExtractionResult,
 } from './secondLookTypes'
 
 async function readError(response: Response): Promise<string> {
@@ -54,6 +57,29 @@ export async function rectifyPage(
   return response.json() as Promise<RectifyResponse>
 }
 
+export async function proposeLayout(file: Blob, filename: string): Promise<LayoutProposal> {
+  const form = new FormData()
+  form.append('file', file, filename)
+  const response = await fetch('/api/v1/propose-layout', { method: 'POST', body: form })
+  if (!response.ok) throw new Error(await readError(response))
+  return response.json() as Promise<LayoutProposal>
+}
+
+export async function extractTrace(
+  file: Blob,
+  filename: string,
+  region: LeadRegion,
+  includeDebug = true,
+): Promise<TraceExtractionResult> {
+  const form = new FormData()
+  form.append('file', file, filename)
+  form.append('region_json', JSON.stringify(region))
+  form.append('include_debug', includeDebug ? 'true' : 'false')
+  const response = await fetch('/api/v1/extract-trace', { method: 'POST', body: form })
+  if (!response.ok) throw new Error(await readError(response))
+  return response.json() as Promise<TraceExtractionResult>
+}
+
 export async function fetchSampleBlob(path: string): Promise<{ blob: Blob; filename: string }> {
   const response = await fetch(path)
   if (!response.ok) {
@@ -62,4 +88,9 @@ export async function fetchSampleBlob(path: string): Promise<{ blob: Blob; filen
   const blob = await response.blob()
   const filename = path.split('/').pop() ?? 'sample.png'
   return { blob, filename }
+}
+
+export function base64ToObjectUrl(base64: string, mediaType = 'image/png'): string {
+  const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0))
+  return URL.createObjectURL(new Blob([bytes], { type: mediaType }))
 }

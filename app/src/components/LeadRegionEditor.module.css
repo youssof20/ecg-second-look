@@ -1,0 +1,106 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+}
+
+.help,
+.assumptions {
+  margin: 0;
+  color: var(--ink-muted);
+  line-height: 1.4;
+  font-size: 0.92rem;
+}
+
+.assumptions {
+  padding-left: 1.1rem;
+}
+
+.leadRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.leadChip {
+  min-height: 2.5rem;
+  min-width: 2.75rem;
+  padding: 0.35rem 0.55rem;
+  border: 1px solid var(--line-strong);
+  background: var(--surface-raised);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.leadChipActive {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface-raised));
+}
+
+.svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 70vh;
+  border: 1px solid var(--line);
+  background: #111;
+}
+
+.box {
+  fill: color-mix(in srgb, var(--accent) 10%, transparent);
+  stroke: color-mix(in srgb, var(--accent) 55%, white);
+  stroke-width: 2;
+}
+
+.boxSelected {
+  fill: color-mix(in srgb, var(--accent) 22%, transparent);
+  stroke: var(--accent);
+  stroke-width: 3;
+}
+
+.boxLabel {
+  fill: #f4fffb;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: var(--font-ui);
+}
+
+.nudge {
+  border: 1px solid var(--line);
+  background: var(--surface-raised);
+  padding: 0.7rem 0.8rem;
+}
+
+.nudgeTitle {
+  margin: 0 0 0.45rem;
+}
+
+.nudgeRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.nudgeRow button {
+  min-height: 2.5rem;
+  padding: 0.4rem 0.7rem;
+  border: 1px solid var(--line-strong);
+  background: var(--surface);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.nudgeRow button:hover,
+.nudgeRow button:focus-visible {
+  border-color: var(--accent);
+  outline: 2px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  outline-offset: 1px;
+}

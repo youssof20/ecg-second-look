@@ -1,23 +1,39 @@
 import { useEffect, useMemo, useState, type ChangeEvent } from 'react'
 import { ImageQualityPanel } from '../components/ImageQualityPanel'
+import { LeadRegionEditor } from '../components/LeadRegionEditor'
 import { OriginalCorrectedCompare } from '../components/OriginalCorrectedCompare'
 import { PageCornerEditor } from '../components/PageCornerEditor'
+import { TraceComparison } from '../components/TraceComparison'
 import {
   assessQuality,
+  base64ToObjectUrl,
   checkApiHealth,
   detectPage,
+  extractTrace,
   fetchSampleBlob,
+  proposeLayout,
   rectifyPage,
 } from '../lib/secondLookApi'
 import {
   SAMPLE_FILES,
   type CornerSet,
+  type LayoutProposal,
+  type LeadRegion,
   type PageDetectionResult,
   type QualityReport,
+  type TraceExtractionResult,
 } from '../lib/secondLookTypes'
 import styles from './SecondLookPage.module.css'
 
 interface LoadedImage {
+  file: Blob
+  filename: string
+  objectUrl: string
+  width: number
+  height: number
+}
+
+interface PageImage {
   file: Blob
   filename: string
   objectUrl: string
@@ -35,6 +51,12 @@ export function SecondLookPage() {
   const [corners, setCorners] = useState<CornerSet | null>(null)
   const [correctedUrl, setCorrectedUrl] = useState<string | null>(null)
   const [rectifyNote, setRectifyNote] = useState<string | null>(null)
+  const [pageImage, setPageImage] = useState<PageImage | null>(null)
+  const [layout, setLayout] = useState<LayoutProposal | null>(null)
+  const [regions, setRegions] = useState<LeadRegion[]>([])
+  const [selectedLeadId, setSelectedLeadId] = useState('II')
+  const [trace, setTrace] = useState<TraceExtractionResult | null>(null)
+  const [showDebug, setShowDebug] = useState(true)
 
   useEffect(() => {
     let cancelled = false
@@ -50,11 +72,17 @@ export function SecondLookPage() {
     return () => {
       if (loaded) URL.revokeObjectURL(loaded.objectUrl)
       if (correctedUrl) URL.revokeObjectURL(correctedUrl)
+      if (pageImage && pageImage.objectUrl !== loaded?.objectUrl && pageImage.objectUrl !== correctedUrl) {
+        URL.revokeObjectURL(pageImage.objectUrl)
+      }
     }
-  }, [loaded, correctedUrl])
+  }, [loaded, correctedUrl, pageImage])
 
   const canDetect = Boolean(loaded && quality?.analysis_allowed)
   const canRectify = Boolean(loaded && corners && quality?.analysis_allowed)
+  const canProposeLayout = Boolean(
+    quality?.analysis_allowed && (pageImage || loaded),
+  )
 
   const statusText = useMemo(() => {
     if (apiUp === null) return 'Checking local analysis service…'
@@ -69,7 +97,11 @@ export function SecondLookPage() {
     setDetection(null)
     setCorners(null)
     setRectifyNote(null)
+    setLayout(null)
+    setRegions([])
+    setTrace(null)
     setError(null)
+    setPageImage(null)
     setCorrectedUrl((current) => {
       if (current) URL.revokeObjectURL(current)
       return null
@@ -88,6 +120,10 @@ export function SecondLookPage() {
       })
       const report = await assessQuality(blob, filename)
       setQuality(report)
+      // Flat clean pages can go straight to layout without corner correction.
+      if (filename.includes('clean_12lead') && report.analysis_allowed) {
+        setPageImage({ file: blob, filename, objectUrl, ...dims })
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Upload failed.')
     } finally {
@@ -127,6 +163,9 @@ export function SecondLookPage() {
         return null
       })
       setRectifyNote(null)
+      setLayout(null)
+      setRegions([])
+      setTrace(null)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Page detection failed.')
     } finally {
@@ -140,16 +179,26 @@ export function SecondLookPage() {
     setError(null)
     try {
       const result = await rectifyPage(loaded.file, loaded.filename, corners)
+      const url = base64ToObjectUrl(result.corrected_image_base64, result.media_type)
       const bytes = Uint8Array.from(atob(result.corrected_image_base64), (c) =>
         c.charCodeAt(0),
       )
       const blob = new Blob([bytes], { type: result.media_type })
-      const url = URL.createObjectURL(blob)
       setCorrectedUrl((current) => {
         if (current) URL.revokeObjectURL(current)
         return url
       })
       setRectifyNote(result.note)
+      setPageImage({
+        file: blob,
+        filename: `corrected-${loaded.filename}`,
+        objectUrl: url,
+        width: result.output_width,
+        height: result.output_height,
+      })
+      setLayout(null)
+      setRegions([])
+      setTrace(null)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Rectification failed.')
     } finally {
@@ -157,13 +206,59 @@ export function SecondLookPage() {
     }
   }
 
+  async function onProposeLayout() {
+    const target = pageImage ?? loaded
+    if (!target) return
+    setBusy(true)
+    setError(null)
+    try {
+      if (!pageImage && loaded) {
+        setPageImage(loaded)
+      }
+      const proposal = await proposeLayout(target.file, target.filename)
+      setLayout(proposal)
+      setRegions(proposal.regions)
+      setSelectedLeadId('II')
+      setTrace(null)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Layout proposal failed.')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function onExtractTrace() {
+    const target = pageImage ?? loaded
+    const region = regions.find((item) => item.lead_id === selectedLeadId)
+    if (!target || !region) return
+    setBusy(true)
+    setError(null)
+    try {
+      const result = await extractTrace(target.file, target.filename, region, true)
+      setTrace(result)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Trace extraction failed.')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  function onChangeRegion(updated: LeadRegion) {
+    setRegions((current) =>
+      current.map((item) => (item.lead_id === updated.lead_id ? updated : item)),
+    )
+    setTrace(null)
+  }
+
+  const editorImage = pageImage ?? loaded
+
   return (
     <div className={styles.page}>
       <header className={styles.header}>
         <h1 className={styles.title}>Second Look</h1>
         <p className={styles.lead}>
-          Prototype workflow for photographed ECG pages: quality checks, corner
-          confirmation, then an inspectable original/corrected comparison.
+          Prototype workflow: quality checks, page corners, one 3×4 lead layout,
+          and single-lead trace extraction with an inspectable failure state.
         </p>
         <p className={styles.disclaimer}>
           Research and education only. Not a diagnostic system. Do not upload
@@ -270,13 +365,57 @@ export function SecondLookPage() {
         />
       ) : null}
 
+      {canProposeLayout ? (
+        <div className={styles.actions}>
+          <button
+            type="button"
+            className={styles.primary}
+            onClick={() => void onProposeLayout()}
+            disabled={busy}
+          >
+            Propose 3×4 lead layout
+          </button>
+        </div>
+      ) : null}
+
+      {layout && editorImage ? (
+        <>
+          <LeadRegionEditor
+            imageUrl={editorImage.objectUrl}
+            proposal={layout}
+            regions={regions}
+            selectedLeadId={selectedLeadId}
+            onSelectLead={setSelectedLeadId}
+            onChangeRegion={onChangeRegion}
+          />
+          <div className={styles.actions}>
+            <button
+              type="button"
+              className={styles.primary}
+              onClick={() => void onExtractTrace()}
+              disabled={busy}
+            >
+              Extract lead {selectedLeadId}
+            </button>
+          </div>
+        </>
+      ) : null}
+
+      {trace ? (
+        <TraceComparison
+          result={trace}
+          showDebug={showDebug}
+          onToggleDebug={setShowDebug}
+        />
+      ) : null}
+
       <section className={styles.next} aria-labelledby="not-yet">
         <h2 id="not-yet" className={styles.sectionTitle}>
           Not in this slice
         </h2>
         <p>
-          Lead-region editing, trace extraction, feature measurement, and prototype
-          pattern rules are not implemented yet.
+          Multi-lead batch extraction, feature measurement, and prototype pattern
+          rules are not implemented yet.
         </p>
       </section>
     </div>
