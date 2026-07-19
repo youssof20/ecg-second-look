@@ -123,9 +123,27 @@ export interface FeatureSet {
 export interface MultiLeadAnalysis {
   traces: TraceExtractionResult[]
   features: FeatureSet
+  pattern_flags: PatternRuleResult[]
   extracted_count: number
   failed_count: number
   note: string
+}
+
+export type RuleStatus = 'triggered' | 'not_triggered' | 'not_assessable'
+
+export interface PatternRuleResult {
+  id: string
+  display_name: string
+  status: RuleStatus
+  purpose: string
+  reason: string
+  affected_leads: string[]
+  evidence_features: string[]
+  threshold_summary: string
+  limitations: string[]
+  source_note: string
+  version: string
+  explanation: string
 }
 
 export const SAMPLE_FILES = [
