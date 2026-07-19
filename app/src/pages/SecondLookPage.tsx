@@ -4,6 +4,7 @@ import { ImageQualityPanel } from '../components/ImageQualityPanel'
 import { LeadRegionEditor } from '../components/LeadRegionEditor'
 import { OriginalCorrectedCompare } from '../components/OriginalCorrectedCompare'
 import { PageCornerEditor } from '../components/PageCornerEditor'
+import { PatternFlagsPanel } from '../components/PatternFlagsPanel'
 import { TraceComparison } from '../components/TraceComparison'
 import {
   analyzeLeads,
@@ -500,11 +501,14 @@ export function SecondLookPage() {
       ) : null}
 
       {analysis ? (
-        <FeatureEvidence
-          features={analysis.features}
-          extractedCount={analysis.extracted_count}
-          failedCount={analysis.failed_count}
-        />
+        <>
+          <FeatureEvidence
+            features={analysis.features}
+            extractedCount={analysis.extracted_count}
+            failedCount={analysis.failed_count}
+          />
+          <PatternFlagsPanel flags={analysis.pattern_flags ?? []} />
+        </>
       ) : null}
 
       <section className={styles.next} aria-labelledby="not-yet">
@@ -512,8 +516,8 @@ export function SecondLookPage() {
           Not in this slice
         </h2>
         <p>
-          Prototype pattern rules and highlighted rule evidence are not implemented
-          yet.
+          Accessibility polish, offline packaging review, and a recorded demo are
+          not finished yet.
         </p>
       </section>
     </div>
