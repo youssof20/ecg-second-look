@@ -21,3 +21,9 @@
 - Only one layout is supported: geometric 3×4 (`I/aVR/V1/V4` …). Boxes are proposals, not OCR of lead labels.
 - Trace extraction uses HSV grid suppression only when reddish grid coverage exceeds 2%; otherwise faint grayscale traces were being erased in early experiments.
 - Gap repair is capped (`MAX_GAP_RUN = 6`). Longer discontinuities stay as failures instead of inventing a continuous waveform.
+
+## Slice 4 — features
+
+- Heart rate / RR / QRS / ST / T measurements use ROI-derived px/mm plus user or default paper speed and voltage gain. Assumed calibration caps quality at `warn` rather than inventing high confidence.
+- Synthetic lead strips often contain a single schematic beat, so heart rate commonly returns `not_assessable` (fewer than two peaks). That is preferred over fabricating a rate.
+- Feature evidence copy is template-filled from measured fields only; no free-form clinical narrative generator.
