@@ -19,7 +19,7 @@ export function HomePage() {
             Open Training
           </Link>
           <Link className={styles.secondary} to="/second-look">
-            Second Look status
+            Open Second Look
           </Link>
         </div>
       </section>
@@ -30,12 +30,13 @@ export function HomePage() {
         </h2>
         <ul className={styles.statusList}>
           <li>
-            <strong>Working:</strong> frontal-plane vector lesson with live limb
-            and simplified precordial projections.
+            <strong>Working:</strong> offline frontal-plane vector lesson; local
+            Second Look quality checks, page-corner editing, and
+            original/corrected comparison on synthetic images.
           </li>
           <li>
-            <strong>Not built yet:</strong> ECG photograph upload, page
-            correction, trace extraction, and prototype pattern rules.
+            <strong>Not built yet:</strong> lead-region editing, waveform
+            extraction, feature measurement, and prototype pattern rules.
           </li>
         </ul>
       </section>
