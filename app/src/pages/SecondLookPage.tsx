@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState, type ChangeEvent } from 'react'
+import { FeatureEvidence } from '../components/FeatureEvidence'
 import { ImageQualityPanel } from '../components/ImageQualityPanel'
 import { LeadRegionEditor } from '../components/LeadRegionEditor'
 import { OriginalCorrectedCompare } from '../components/OriginalCorrectedCompare'
 import { PageCornerEditor } from '../components/PageCornerEditor'
 import { TraceComparison } from '../components/TraceComparison'
 import {
+  analyzeLeads,
   assessQuality,
   base64ToObjectUrl,
   checkApiHealth,
@@ -16,9 +18,11 @@ import {
 } from '../lib/secondLookApi'
 import {
   SAMPLE_FILES,
+  type Calibration,
   type CornerSet,
   type LayoutProposal,
   type LeadRegion,
+  type MultiLeadAnalysis,
   type PageDetectionResult,
   type QualityReport,
   type TraceExtractionResult,
@@ -57,6 +61,10 @@ export function SecondLookPage() {
   const [selectedLeadId, setSelectedLeadId] = useState('II')
   const [trace, setTrace] = useState<TraceExtractionResult | null>(null)
   const [showDebug, setShowDebug] = useState(true)
+  const [analysis, setAnalysis] = useState<MultiLeadAnalysis | null>(null)
+  const [paperSpeed, setPaperSpeed] = useState<25 | 50>(25)
+  const [voltageGain, setVoltageGain] = useState<5 | 10>(10)
+  const [calibrationConfirmed, setCalibrationConfirmed] = useState(false)
 
   useEffect(() => {
     let cancelled = false
@@ -100,6 +108,7 @@ export function SecondLookPage() {
     setLayout(null)
     setRegions([])
     setTrace(null)
+    setAnalysis(null)
     setError(null)
     setPageImage(null)
     setCorrectedUrl((current) => {
@@ -166,6 +175,7 @@ export function SecondLookPage() {
       setLayout(null)
       setRegions([])
       setTrace(null)
+      setAnalysis(null)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Page detection failed.')
     } finally {
@@ -199,6 +209,7 @@ export function SecondLookPage() {
       setLayout(null)
       setRegions([])
       setTrace(null)
+      setAnalysis(null)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Rectification failed.')
     } finally {
@@ -220,6 +231,7 @@ export function SecondLookPage() {
       setRegions(proposal.regions)
       setSelectedLeadId('II')
       setTrace(null)
+      setAnalysis(null)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Layout proposal failed.')
     } finally {
@@ -243,11 +255,37 @@ export function SecondLookPage() {
     }
   }
 
+  async function onAnalyzeAll() {
+    const target = pageImage ?? loaded
+    if (!target || regions.length === 0) return
+    setBusy(true)
+    setError(null)
+    try {
+      const calibration: Calibration = {
+        paper_speed_mm_s: paperSpeed,
+        voltage_gain_mm_mv: voltageGain,
+        source: calibrationConfirmed ? 'user_confirmed' : 'assumed_defaults',
+        note: calibrationConfirmed
+          ? 'User confirmed paper speed and voltage gain for this session.'
+          : 'FOR EDUCATIONAL PROTOTYPE USE ONLY - REQUIRES CLINICAL REVIEW AND VALIDATION. Defaults assumed unless confirmed.',
+      }
+      const result = await analyzeLeads(target.file, target.filename, regions, calibration)
+      setAnalysis(result)
+      const selected = result.traces.find((item) => item.lead_id === selectedLeadId)
+      if (selected) setTrace(selected)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Multi-lead analysis failed.')
+    } finally {
+      setBusy(false)
+    }
+  }
+
   function onChangeRegion(updated: LeadRegion) {
     setRegions((current) =>
       current.map((item) => (item.lead_id === updated.lead_id ? updated : item)),
     )
     setTrace(null)
+    setAnalysis(null)
   }
 
   const editorImage = pageImage ?? loaded
@@ -257,8 +295,9 @@ export function SecondLookPage() {
       <header className={styles.header}>
         <h1 className={styles.title}>Second Look</h1>
         <p className={styles.lead}>
-          Prototype workflow: quality checks, page corners, one 3×4 lead layout,
-          and single-lead trace extraction with an inspectable failure state.
+          Prototype workflow: quality checks, page corners, 3×4 lead layout,
+          multi-lead extraction, and limited feature evidence with explicit
+          unable-to-assess states.
         </p>
         <p className={styles.disclaimer}>
           Research and education only. Not a diagnostic system. Do not upload
@@ -388,6 +427,49 @@ export function SecondLookPage() {
             onSelectLead={setSelectedLeadId}
             onChangeRegion={onChangeRegion}
           />
+
+          <section className={styles.controls} aria-labelledby="cal-heading">
+            <h2 id="cal-heading" className={styles.sectionTitle}>
+              Calibration
+            </h2>
+            <p className={styles.detectNote}>
+              Physical units need paper speed and voltage gain. Leave unconfirmed to
+              keep values labeled as assumed defaults.
+            </p>
+            <div className={styles.sampleRow}>
+              <label className={styles.fileLabel}>
+                Paper speed
+                <select
+                  className={styles.fileInput}
+                  value={paperSpeed}
+                  onChange={(event) => setPaperSpeed(Number(event.target.value) as 25 | 50)}
+                >
+                  <option value={25}>25 mm/s</option>
+                  <option value={50}>50 mm/s</option>
+                </select>
+              </label>
+              <label className={styles.fileLabel}>
+                Voltage gain
+                <select
+                  className={styles.fileInput}
+                  value={voltageGain}
+                  onChange={(event) => setVoltageGain(Number(event.target.value) as 5 | 10)}
+                >
+                  <option value={10}>10 mm/mV</option>
+                  <option value={5}>5 mm/mV</option>
+                </select>
+              </label>
+              <label className={styles.debugToggleLike}>
+                <input
+                  type="checkbox"
+                  checked={calibrationConfirmed}
+                  onChange={(event) => setCalibrationConfirmed(event.target.checked)}
+                />
+                I confirm these settings for this image
+              </label>
+            </div>
+          </section>
+
           <div className={styles.actions}>
             <button
               type="button"
@@ -396,6 +478,14 @@ export function SecondLookPage() {
               disabled={busy}
             >
               Extract lead {selectedLeadId}
+            </button>
+            <button
+              type="button"
+              className={styles.primary}
+              onClick={() => void onAnalyzeAll()}
+              disabled={busy}
+            >
+              Extract all leads + measure features
             </button>
           </div>
         </>
@@ -409,13 +499,21 @@ export function SecondLookPage() {
         />
       ) : null}
 
+      {analysis ? (
+        <FeatureEvidence
+          features={analysis.features}
+          extractedCount={analysis.extracted_count}
+          failedCount={analysis.failed_count}
+        />
+      ) : null}
+
       <section className={styles.next} aria-labelledby="not-yet">
         <h2 id="not-yet" className={styles.sectionTitle}>
           Not in this slice
         </h2>
         <p>
-          Multi-lead batch extraction, feature measurement, and prototype pattern
-          rules are not implemented yet.
+          Prototype pattern rules and highlighted rule evidence are not implemented
+          yet.
         </p>
       </section>
     </div>

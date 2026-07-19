@@ -6,6 +6,8 @@ import type {
   LayoutProposal,
   LeadRegion,
   TraceExtractionResult,
+  Calibration,
+  MultiLeadAnalysis,
 } from './secondLookTypes'
 
 async function readError(response: Response): Promise<string> {
@@ -78,6 +80,22 @@ export async function extractTrace(
   const response = await fetch('/api/v1/extract-trace', { method: 'POST', body: form })
   if (!response.ok) throw new Error(await readError(response))
   return response.json() as Promise<TraceExtractionResult>
+}
+
+export async function analyzeLeads(
+  file: Blob,
+  filename: string,
+  regions: LeadRegion[],
+  calibration: Calibration,
+): Promise<MultiLeadAnalysis> {
+  const form = new FormData()
+  form.append('file', file, filename)
+  form.append('regions_json', JSON.stringify(regions))
+  form.append('calibration_json', JSON.stringify(calibration))
+  form.append('include_debug', 'false')
+  const response = await fetch('/api/v1/analyze-leads', { method: 'POST', body: form })
+  if (!response.ok) throw new Error(await readError(response))
+  return response.json() as Promise<MultiLeadAnalysis>
 }
 
 export async function fetchSampleBlob(path: string): Promise<{ blob: Blob; filename: string }> {

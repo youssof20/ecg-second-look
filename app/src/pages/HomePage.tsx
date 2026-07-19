@@ -31,12 +31,12 @@ export function HomePage() {
         <ul className={styles.statusList}>
           <li>
             <strong>Working:</strong> offline frontal-plane vector lesson; local
-            Second Look quality checks, page-corner editing, 3×4 lead-region
-            proposal, and single-lead trace extraction with failure states.
+            Second Look quality checks, page correction, 3×4 lead regions,
+            multi-lead extraction, and limited feature evidence panels.
           </li>
           <li>
-            <strong>Not built yet:</strong> multi-lead batch extraction, feature
-            measurement, and prototype pattern rules.
+            <strong>Not built yet:</strong> prototype pattern rules and
+            highlighted rule evidence.
           </li>
         </ul>
       </section>

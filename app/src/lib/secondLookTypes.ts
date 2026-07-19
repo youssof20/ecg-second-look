@@ -94,6 +94,40 @@ export interface TraceExtractionResult {
   note: string
 }
 
+export interface Calibration {
+  paper_speed_mm_s: number
+  voltage_gain_mm_mv: number
+  source: 'assumed_defaults' | 'user_confirmed' | string
+  note: string
+}
+
+export interface FeatureMeasurement {
+  id: string
+  display_name: string
+  value: number | null
+  units: string
+  source_leads: string[]
+  method: string
+  quality_status: CheckStatus
+  failure_reason: string | null
+  evidence: string
+  next_action: string
+}
+
+export interface FeatureSet {
+  calibration: Calibration
+  features: FeatureMeasurement[]
+  summary: string
+}
+
+export interface MultiLeadAnalysis {
+  traces: TraceExtractionResult[]
+  features: FeatureSet
+  extracted_count: number
+  failed_count: number
+  note: string
+}
+
 export const SAMPLE_FILES = [
   { id: 'clean_page', label: 'Clean page (layout)', path: '/samples/synthetic/clean_12lead.png' },
   { id: 'photo_skewed', label: 'Skewed photo', path: '/samples/synthetic/photo_skewed.png' },
