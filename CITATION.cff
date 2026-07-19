@@ -1,0 +1,13 @@
+cff-version: 1.2.0
+title: ECG Second Look
+message: If you use this software, please cite it as below.
+type: software
+authors:
+  - name: ECG Second Look contributors
+repository-code: https://github.com/example/ecg-second-look
+abstract: >-
+  Offline-first ECG image digitization and interpretation-training prototype
+  with inspectable evidence and failure states.
+license: MIT
+version: 0.1.0
+date-released: 2026-07-19

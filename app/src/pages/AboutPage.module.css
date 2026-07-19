@@ -1,0 +1,48 @@
+.page {
+  max-width: 42rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.35rem;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 3vw, 1.9rem);
+}
+
+.h2 {
+  margin: 0 0 0.45rem;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+}
+
+.page p,
+.page li {
+  margin: 0;
+  line-height: 1.5;
+  color: var(--ink-muted);
+  text-wrap: pretty;
+}
+
+.page p + p {
+  margin-top: 0.7rem;
+}
+
+.page ul {
+  margin: 0;
+  padding-left: 1.15rem;
+}
+
+.page li + li {
+  margin-top: 0.45rem;
+}
+
+.page strong {
+  color: var(--ink);
+}
+
+.page code {
+  font-size: 0.92em;
+  color: var(--ink);
+}
