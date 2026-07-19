@@ -2,88 +2,43 @@
 
 Offline-first ECG interpretation trainer and transparent second-reader prototype for non-cardiologist clinicians in low-resource settings.
 
-Training mode runs in the browser after install. Second Look uses a **local Python service** on the same machine for image quality checks and page correction. That is not the same as on-device mobile offline inference.
+Training mode runs in the browser after install. Second Look uses a local Python service on the same machine. That is not on-device mobile offline inference.
 
 **Not a medical device. Not for patient-care decisions.**
 
 ## What currently works
 
-- React/TypeScript/Vite PWA with Home, Training, Second Look, and About
-- Offline frontal-plane mean QRS vector lesson
-- Local API: upload decode, quality report, page-corner detection, manual corner edit, original/corrected comparison
-- Synthetic ECG fixtures with blur, glare, shadow, skew, and tiny-image refusals
+- Offline frontal-plane vector training lesson
+- Local Second Look pipeline: quality checks, page corners, 3x4 lead regions, multi-lead trace extraction, limited features, prototype pattern flags
+- Synthetic fixtures and a small benchmark script
 
 ## What does not work
 
-- Lead-region editing and waveform extraction
-- Feature measurement and prototype pattern rules
+- Clinical validation
 - Fully offline Second Look on a phone without the local API
-- Clinical validation of any kind
+- Reliable diagnosis of STEMI, hyperkalemia, VT, AF, or any other condition
 
 ## Local setup
 
-### PowerShell note (Windows)
-
-If `npm` fails with "running scripts is disabled", either:
+On Windows PowerShell, use `npm.cmd` (avoids the script-permission error):
 
 ```powershell
-Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
-```
-
-then open a **new** terminal, or call the cmd shim:
-
-```powershell
-npm.cmd install
-```
-
-### App
-
-```bash
 cd app
 npm.cmd install
 npm.cmd run dev
 ```
 
-### API (required for Second Look)
+API (needed for Second Look):
 
-```bash
+```powershell
 python -m venv .venv
 .\.venv\Scripts\pip.exe install -r api\requirements.txt
 .\.venv\Scripts\python.exe -m uvicorn ecg_api.main:app --app-dir api --reload --port 8000
 ```
 
-Regenerate synthetic samples (optional):
+Tests:
 
-```bash
-.\.venv\Scripts\python.exe scripts\generate_synthetic_ecg.py
-```
-
-## Architecture
-
-| Path | Role |
-|------|------|
-| `app/` | React PWA (training offline; Second Look UI) |
-| `api/` | FastAPI + OpenCV quality and perspective stages |
-| `samples/synthetic/` | Generated fixtures only |
-| `docs/` | Engineering notes and validation roadmap |
-
-Uploads are decoded in memory and not stored by default.
-
-## Sample workflow (Second Look)
-
-1. Start the API, then the Vite app.
-2. Open **Second Look** and load `Skewed photo` (or your own non-identifiable image).
-3. Read the quality panel; blurry/tiny samples should refuse further analysis.
-4. Detect corners, drag handles if needed, apply correction.
-5. Compare original and corrected side by side.
-
-## Safety and intended use
-
-Educational and research prototype only. Do not upload identifiable clinical headers. The text-region warning is a heuristic, not anonymization. Future measurement outputs will answer what was measured, where, how reliable it was, and what a human should do next.
-
-## Testing
-
-```bash
+```powershell
 cd app
 npm.cmd run test
 npm.cmd run lint
@@ -92,11 +47,34 @@ npm.cmd run build
 
 # from repo root
 .\.venv\Scripts\python.exe -m pytest api\tests -q
+.\.venv\Scripts\python.exe scripts\benchmark_pipeline.py
 ```
+
+## Architecture
+
+| Path | Role |
+|------|------|
+| `app/` | React PWA |
+| `api/` | FastAPI + OpenCV pipeline |
+| `samples/synthetic/` | Generated fixtures only |
+| `docs/` | Engineering notes and validation roadmap |
+
+Uploads stay in memory and are not stored by default.
+
+## Sample workflow (Second Look)
+
+1. Start the API, then the app.
+2. Open Second Look and load **Clean page (layout)** or **Skewed photo**.
+3. Complete quality / corners as needed.
+4. Propose 3x4 layout, extract all leads, review feature evidence and pattern flags.
+
+## Safety and intended use
+
+Educational and research prototype only. Pattern outputs are prototype flags, not diagnoses. Do not upload identifiable clinical headers.
 
 ## Roadmap
 
-Next slice: one supported lead layout, manual lead-region editor, trace extraction for at least one lead, with a visible extraction failure state.
+Next: accessibility polish, offline packaging review, and a realistic demo recording (Slice 6).
 
 See `docs/validation-roadmap.md`.
 

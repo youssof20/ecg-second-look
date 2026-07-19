@@ -27,3 +27,9 @@
 - Heart rate / RR / QRS / ST / T measurements use ROI-derived px/mm plus user or default paper speed and voltage gain. Assumed calibration caps quality at `warn` rather than inventing high confidence.
 - Synthetic lead strips often contain a single schematic beat, so heart rate commonly returns `not_assessable` (fewer than two peaks). That is preferred over fabricating a rate.
 - Feature evidence copy is template-filled from measured fields only; no free-form clinical narrative generator.
+
+## Slice 5 — pattern rules
+
+- Rule thresholds live in `rule_config.py` under an explicit educational-only banner. No invented clinical citations.
+- Rhythm rules often return `not_assessable` on single-beat synthetic strips; that is intentional.
+- Benchmark script reports stage metrics separately and labels results as synthetic-only.
