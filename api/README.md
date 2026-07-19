@@ -15,6 +15,7 @@ Endpoints:
 - `POST /api/v1/detect-page` (multipart file; refused when quality hard-fails)
 - `POST /api/v1/propose-layout` (multipart file; 3×4 geometric proposal)
 - `POST /api/v1/extract-trace` (multipart file + `region_json` form field)
+- `POST /api/v1/analyze-leads` (multipart file + `regions_json` + optional `calibration_json`)
 - `GET /samples/...` (synthetic fixtures)
 
 Uploads are not written to disk.

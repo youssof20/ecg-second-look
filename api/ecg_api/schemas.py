@@ -132,3 +132,37 @@ class TraceExtractionResult(BaseModel):
     source_crop_base64: str | None = None
     debug_overlay_base64: str | None = None
     note: str
+
+
+class Calibration(BaseModel):
+    paper_speed_mm_s: float = Field(default=25.0, description="25 or 50 typical")
+    voltage_gain_mm_mv: float = Field(default=10.0, description="10 or 5 typical")
+    source: str = Field(description="assumed_defaults or user_confirmed")
+    note: str
+
+
+class FeatureMeasurement(BaseModel):
+    id: str
+    display_name: str
+    value: float | None
+    units: str
+    source_leads: list[LeadId]
+    method: str
+    quality_status: CheckStatus
+    failure_reason: str | None = None
+    evidence: str
+    next_action: str
+
+
+class FeatureSet(BaseModel):
+    calibration: Calibration
+    features: list[FeatureMeasurement]
+    summary: str
+
+
+class MultiLeadAnalysis(BaseModel):
+    traces: list[TraceExtractionResult]
+    features: FeatureSet
+    extracted_count: int
+    failed_count: int
+    note: str
