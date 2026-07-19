@@ -511,13 +511,14 @@ export function SecondLookPage() {
         </>
       ) : null}
 
-      <section className={styles.next} aria-labelledby="not-yet">
-        <h2 id="not-yet" className={styles.sectionTitle}>
-          Not in this slice
+      <section className={styles.next} aria-labelledby="limits">
+        <h2 id="limits" className={styles.sectionTitle}>
+          Prototype limits
         </h2>
         <p>
-          Accessibility polish, offline packaging review, and a recorded demo are
-          not finished yet.
+          Synthetic benchmarks are not clinical validity. Pattern flags are not
+          diagnoses. See the About page and validation roadmap before any care
+          use.
         </p>
       </section>
     </div>

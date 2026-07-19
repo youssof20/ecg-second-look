@@ -33,3 +33,9 @@
 - Rule thresholds live in `rule_config.py` under an explicit educational-only banner. No invented clinical citations.
 - Rhythm rules often return `not_assessable` on single-beat synthetic strips; that is intentional.
 - Benchmark script reports stage metrics separately and labels results as synthetic-only.
+
+## Slice 6 — packaging and review
+
+- Offline banner distinguishes Training (cached app shell) from Second Look (needs local API).
+- Workbox keeps `/api` and `/samples` network-only so stale analysis responses are not cached as success.
+- Demo and accessibility checklists live under `docs/` instead of inventing a polished video asset in-repo.
