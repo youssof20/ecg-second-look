@@ -10,17 +10,28 @@ from fastapi.staticfiles import StaticFiles
 
 from ecg_api.config import MAX_UPLOAD_BYTES
 from ecg_api.decode import ImageDecodeError, decode_image_bytes, encode_png_base64
+from ecg_api.layout import propose_lead_regions
 from ecg_api.perspective import detect_page_corners, rectify_page
 from ecg_api.quality import assess_image_quality
-from ecg_api.schemas import PageDetectionResult, QualityReport, RectifyRequest, RectifyResponse
+from ecg_api.schemas import (
+    LeadRegion,
+    LayoutProposal,
+    PageDetectionResult,
+    QualityReport,
+    RectifyRequest,
+    RectifyResponse,
+    TraceExtractionResult,
+)
+from ecg_api.trace import extract_lead_trace
 
 SAMPLES_DIR = Path(__file__).resolve().parents[2] / "samples"
 
 app = FastAPI(
     title="ECG Second Look API",
-    version="0.2.0",
+    version="0.3.0",
     description=(
-        "Local prototype endpoints for image-quality checks and page rectification. "
+        "Local prototype endpoints for image-quality checks, page rectification, "
+        "lead-region proposal, and single-lead trace extraction. "
         "Not a medical device. Uploads are processed in memory and not stored."
     ),
 )
@@ -108,6 +119,35 @@ async def rectify(
             "Transformation is deterministic from the corners you confirmed."
         ),
     )
+
+
+@app.post("/api/v1/propose-layout", response_model=LayoutProposal)
+async def propose_layout(file: UploadFile = File(...)) -> LayoutProposal:
+    """Propose 3×4 lead regions on a page image (preferably already rectified)."""
+    data = await _read_upload(file)
+    image = _decode_or_400(data)
+    height, width = image.shape[:2]
+    try:
+        return propose_lead_regions(width, height)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.post("/api/v1/extract-trace", response_model=TraceExtractionResult)
+async def extract_trace(
+    file: UploadFile = File(...),
+    region_json: str = Form(...),
+    include_debug: bool = Form(True),
+) -> TraceExtractionResult:
+    """Extract one lead centerline from a user-confirmed rectangular ROI."""
+    try:
+        region = LeadRegion.model_validate_json(region_json)
+    except Exception as exc:  # noqa: BLE001 - return validation detail to client
+        raise HTTPException(status_code=400, detail=f"Invalid region JSON: {exc}") from exc
+
+    data = await _read_upload(file)
+    image = _decode_or_400(data)
+    return extract_lead_trace(image, region, include_debug=include_debug)
 
 
 async def _read_upload(file: UploadFile) -> bytes:
