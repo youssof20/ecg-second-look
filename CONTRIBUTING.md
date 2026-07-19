@@ -13,13 +13,12 @@ This is a small solo-maintained prototype. Prefer narrow pull requests that fini
 
 ## Local checks
 
-From `app/`:
+On Windows, use `npm.cmd` instead of `npm` if PowerShell blocks scripts.
 
 ```bash
-npm run test
-npm run lint
-npm run typecheck
-npm run build
+cd app
+npm.cmd install
+npm.cmd run test
 ```
 
 ## Clinical safety reports
