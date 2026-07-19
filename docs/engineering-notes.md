@@ -7,3 +7,11 @@
 - Isoelectric threshold is `|projection| ≤ 0.12` so perpendicular vectors read as flat rather than flickering sign with floating-point noise.
 - Service worker registration is production-oriented (`vite-plugin-pwa`). Dev server leaves the SW disabled to avoid stale-module confusion while editing.
 - System font stack (Palatino / Segoe UI) keeps the first paint offline without shipping webfonts.
+
+## Slice 2 — quality and page correction
+
+- Glare detection uses saturated pixels (`≥252`), not ordinary paper white (`~245`). An earlier threshold of 245 marked every clean synthetic page as glare.
+- Hard refusals are limited to resolution and blur. Glare/shadow/coverage warnings still allow corner editing so the user can inspect a salvageable capture.
+- When no page quad is found, the API returns full-frame corners with status `fallback_full_frame` instead of inventing a confident detection.
+- Rectify returns PNG base64 and never writes the upload or result to disk.
+- OpenCV pin is `opencv-python-headless==5.0.0.93` because older 4.12 wheels conflict with NumPy builds available for Python 3.14 on this machine.
