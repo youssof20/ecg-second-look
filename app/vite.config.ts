@@ -30,6 +30,17 @@ export default defineConfig({
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,ico,png,woff2}'],
         navigateFallback: '/index.html',
+        // Analysis API and sample fixture proxy stay network-only.
+        runtimeCaching: [
+          {
+            urlPattern: /\/api\/.*/i,
+            handler: 'NetworkOnly',
+          },
+          {
+            urlPattern: /\/samples\/.*/i,
+            handler: 'NetworkOnly',
+          },
+        ],
       },
       devOptions: {
         enabled: false,
