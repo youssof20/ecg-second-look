@@ -155,3 +155,11 @@
 .detectNote strong {
   color: var(--ink);
 }
+
+.debugToggleLike {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 2.5rem;
+  font-weight: 600;
+}
