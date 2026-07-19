@@ -1,0 +1,128 @@
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 2.4rem 5.5rem minmax(0, 1fr) 3rem;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.35rem 0.55rem;
+  border: 1px solid var(--line);
+  background: var(--surface-raised);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.row:hover,
+.row:focus-visible {
+  border-color: var(--accent);
+  outline: 2px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  outline-offset: 1px;
+}
+
+.rowSelected {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface-raised));
+}
+
+.leadId {
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.polarity {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.positive {
+  color: var(--positive);
+}
+
+.negative {
+  color: var(--negative);
+}
+
+.isoelectric {
+  color: var(--ink-muted);
+}
+
+.wave {
+  width: 100%;
+  height: 2.4rem;
+  background:
+    repeating-linear-gradient(
+      to right,
+      transparent,
+      transparent 9px,
+      color-mix(in srgb, var(--ink) 6%, transparent) 9px,
+      color-mix(in srgb, var(--ink) 6%, transparent) 10px
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      transparent,
+      transparent 9px,
+      color-mix(in srgb, var(--ink) 6%, transparent) 9px,
+      color-mix(in srgb, var(--ink) 6%, transparent) 10px
+    ),
+    #f7faf8;
+}
+
+.baseline {
+  stroke: color-mix(in srgb, var(--ink) 25%, transparent);
+  stroke-width: 1;
+  stroke-dasharray: 2 3;
+}
+
+.trace {
+  stroke: var(--trace);
+  stroke-width: 1.75;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.value {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.85rem;
+  color: var(--ink-muted);
+  text-align: right;
+}
+
+@media (max-width: 420px) {
+  .row {
+    grid-template-columns: 2rem 1fr;
+    grid-template-areas:
+      "id polarity"
+      "wave wave"
+      "value value";
+  }
+
+  .leadId {
+    grid-area: id;
+  }
+
+  .polarity {
+    grid-area: polarity;
+  }
+
+  .wave {
+    grid-area: wave;
+  }
+
+  .value {
+    grid-area: value;
+    text-align: left;
+  }
+}

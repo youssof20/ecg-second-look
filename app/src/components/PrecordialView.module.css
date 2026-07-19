@@ -1,0 +1,90 @@
+.section {
+  margin-top: 1.25rem;
+}
+
+.heading {
+  margin: 0 0 0.35rem;
+  font-size: 1.05rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+}
+
+.note {
+  margin: 0 0 0.75rem;
+  color: var(--ink-muted);
+  font-size: 0.92rem;
+  line-height: 1.4;
+  text-wrap: pretty;
+}
+
+.grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.cell {
+  border: 1px solid var(--line);
+  background: var(--surface-raised);
+  padding: 0.45rem;
+}
+
+.meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.35rem;
+  margin-bottom: 0.25rem;
+}
+
+.id {
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.polarity {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.positive {
+  color: var(--positive);
+}
+
+.negative {
+  color: var(--negative);
+}
+
+.isoelectric {
+  color: var(--ink-muted);
+}
+
+.wave {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: #f7faf8;
+}
+
+.baseline {
+  stroke: color-mix(in srgb, var(--ink) 25%, transparent);
+  stroke-width: 1;
+  stroke-dasharray: 2 3;
+}
+
+.trace {
+  stroke: var(--trace);
+  stroke-width: 1.6;
+  stroke-linejoin: round;
+}
+
+@media (max-width: 520px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
